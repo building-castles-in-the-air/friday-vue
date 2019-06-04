@@ -17,18 +17,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  height: 100%;
-}
-body {
-  cursor: default;
-  font: small arial, sans-serif;
-  margin: 0;
-  min-width: 360px;
-  min-height: 630px;
-  overflow-x: hidden;
-  text-align: -webkit-center;
-}
-html {
-  height: 100%;
 }
 </style>
