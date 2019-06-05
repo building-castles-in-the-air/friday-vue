@@ -1,20 +1,46 @@
 import Vue from 'vue'
-import router from 'vue-router'
-import {login,home} from '@/page/'
+import Router from 'vue-router'
 
-Vue.use(router)
+Vue.use(Router)
 
-export default new router({
-    routes:[
-        {
-            path:'/',
-            name: 'home',
-            component: home
-        },
-        {
-            path:'/login',
-            name: 'login',
-            component: login
-        }
-    ]
+import Layout from '@/layout'
+
+/**
+ * 所有人都可以访问的路由地址
+ */
+export const constantRouters = [
+    {
+        path: '/login',
+        component: () => import('@/page/login/login')
+    },
+    {
+        path: '/404',
+        component: () => import('@/page/error/404')
+    },
+    {
+        path: '/',
+        component: Layout,
+        redirect: '/dashboard',
+        children: [{
+            path: 'dashboard',
+            name: 'Dashboard',
+            component: () => import('@/page/dashboard/index'),
+            meta: { title: 'Dashboard', icon: 'dashboard' }
+
+        }]
+    },
+    {
+        path: '*',
+        redirect: '/404',
+    }
+]
+
+const createRouter = () => new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRouters
 })
+
+const router = createRouter()
+
+export default router
