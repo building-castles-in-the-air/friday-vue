@@ -1,7 +1,6 @@
 <template>
-  <el-carousel>
+  <el-carousel indicator-position="outside" height="350px">
     <el-carousel-item v-for="(item,index) in items" :key="index">
-      <!-- <img src={{item.url}}> -->
       <el-image :src="item.url" :fit="item.fit"></el-image>
     </el-carousel-item>
   </el-carousel>
@@ -12,8 +11,3 @@ export default {
   props: ["items"]
 };
 </script>
-
-
-<style>
-
-</style>
