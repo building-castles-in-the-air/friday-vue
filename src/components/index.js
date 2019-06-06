@@ -13,4 +13,4 @@ export { default as rightPanel } from './rightPanel/rightPanel'
 // 设置
 export { default as settings } from './settings/settings'
 
-export { default as themePicker } from './ThemePicker/ThemePicker'
+export { default as svgIcon } from './svgIcon/svgIcon'

@@ -1,94 +1,320 @@
 <template>
-  <el-container class="login-container">
-    <el-row class="login-carousel-row" type="flex" justify="center">
-      <carousel class="login-carousel" v-bind:items="items"></carousel>
-    </el-row>
-    <el-row class="login-form-row" type="flex" justify="center">
-      <el-form class="login-form" :label-position="labelPosition" :model="loginForm">
-        <el-row>
-          <el-col :span="14">
-            <h3>登陆</h3>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="14">
-            <el-input v-model="loginForm.username" placeholder="账号"></el-input>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="14">
-            <el-input v-model="loginForm.password" placeholder="密码"></el-input>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="14">
-            <el-button type="primary" style="width:100%;">登陆</el-button>
-          </el-col>
-        </el-row>
-      </el-form>
-    </el-row>
-  </el-container>
+  <div class="login-container">
+    <!-- <carousel class="login-carousel" v-bind:items="items"></carousel> -->
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+      autocomplete="on"
+      label-position="left"
+    >
+      <div class="title-container">
+        <h3 class="title">登陆</h3>
+      </div>
+
+      <el-form-item prop="username">
+        <span class="svg-container">
+          <svg-icon icon-class="user"/>
+        </span>
+        <el-input
+          ref="username"
+          v-model="loginForm.username"
+          placeholder="Username"
+          name="username"
+          type="text"
+          tabindex="1"
+          autocomplete="on"
+        />
+      </el-form-item>
+
+      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password"/>
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="Password"
+            name="password"
+            tabindex="2"
+            autocomplete="on"
+            @keyup.native="checkCapslock"
+            @blur="capsTooltip = false"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
+          </span>
+        </el-form-item>
+      </el-tooltip>
+
+      <el-button
+        :loading="loading"
+        type="primary"
+        style="width:100%;margin-bottom:30px;"
+        @click.native.prevent="handleLogin"
+      >Login</el-button>
+    </el-form>
+  </div>
 </template>
 
 <script>
-import { carousel } from "@/components/";
+import { validUsername } from "@/util/validate";
+// import { carousel } from "@/components/";
+
 export default {
-  components: { carousel },
+  name: "Login",
+  // components: { carousel },
   data() {
-    return {
-      items: [
-        { url: "/images/login-background.jpg", fit: "fill" },
-        { url: "/images/login-background.jpg", fit: "contain" },
-        { url: "/images/login-background.jpg", fit: "cover" },
-        { url: "/images/login-background.jpg", fit: "none" },
-        { url: "/images/login-background.jpg", fit: "scale-down" }
-      ],
-      loginForm: { username: "", password: "" },
-      labelPosition: "left"
+    const validateUsername = (rule, value, callback) => {
+      if (!validUsername(value)) {
+        callback(new Error("请输入正确用户名！"));
+      } else {
+        callback();
+      }
     };
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error("密码不能少于6位！"));
+      } else {
+        callback();
+      }
+    };
+    return {
+      // items: [
+      //   { url: "/images/login-background.jpg", fit: "fill" },
+      //   { url: "/images/login-background.jpg", fit: "contain" },
+      //   { url: "/images/login-background.jpg", fit: "cover" },
+      //   { url: "/images/login-background.jpg", fit: "none" },
+      //   { url: "/images/login-background.jpg", fit: "scale-down" }
+      // ],
+      loginForm: {
+        username: "admin",
+        password: "111111"
+      },
+      loginRules: {
+        username: [
+          { required: true, trigger: "blur", validator: validateUsername }
+        ],
+        password: [
+          { required: true, trigger: "blur", validator: validatePassword }
+        ]
+      },
+      passwordType: "password",
+      capsTooltip: false,
+      loading: false,
+      redirect: undefined,
+      otherQuery: {}
+    };
+  },
+  watch: {
+    $route: {
+      handler: function(route) {
+        const query = route.query;
+        if (query) {
+          this.redirect = query.redirect;
+          this.otherQuery = this.getOtherQuery(query);
+        }
+      },
+      immediate: true
+    }
+  },
+  created() {
+    // window.addEventListener('storage', this.afterQRScan)
+  },
+  mounted() {
+    if (this.loginForm.username === "") {
+      this.$refs.username.focus();
+    } else if (this.loginForm.password === "") {
+      this.$refs.password.focus();
+    }
+  },
+  destroyed() {
+    // window.removeEventListener('storage', this.afterQRScan)
+  },
+  methods: {
+    checkCapslock({ shiftKey, key } = {}) {
+      if (key && key.length === 1) {
+        if (
+          (shiftKey && (key >= "a" && key <= "z")) ||
+          (!shiftKey && (key >= "A" && key <= "Z"))
+        ) {
+          this.capsTooltip = true;
+        } else {
+          this.capsTooltip = false;
+        }
+      }
+      if (key === "CapsLock" && this.capsTooltip === true) {
+        this.capsTooltip = false;
+      }
+    },
+    showPwd() {
+      if (this.passwordType === "password") {
+        this.passwordType = "";
+      } else {
+        this.passwordType = "password";
+      }
+      this.$nextTick(() => {
+        this.$refs.password.focus();
+      });
+    },
+    handleLogin() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true;
+          this.$store
+            .dispatch("user/login", this.loginForm)
+            .then(() => {
+              this.$router.push({
+                path: this.redirect || "/",
+                query: this.otherQuery
+              });
+              this.loading = false;
+            })
+            .catch(() => {
+              this.loading = false;
+            });
+        } else {
+          // eslint-disable-next-line
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    getOtherQuery(query) {
+      return Object.keys(query).reduce((acc, cur) => {
+        if (cur !== "redirect") {
+          acc[cur] = query[cur];
+        }
+        return acc;
+      }, {});
+    }
+    // afterQRScan() {
+    //   if (e.key === 'x-admin-oauth-code') {
+    //     const code = getQueryObject(e.newValue)
+    //     const codeMap = {
+    //       wechat: 'code',
+    //       tencent: 'code'
+    //     }
+    //     const type = codeMap[this.auth_type]
+    //     const codeName = code[type]
+    //     if (codeName) {
+    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+    //         this.$router.push({ path: this.redirect || '/' })
+    //       })
+    //     } else {
+    //       alert('第三方登录失败')
+    //     }
+    //   }
+    // }
   }
 };
 </script>
 
-
-<style>
-.login-container {
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url("/images/login-background.jpg") no-repeat center 0; /*引入背景图，不重复出现*/
-  background-size: cover; /*图片随屏幕大小同步缩放,但是图片画面可能只显示一部分*/
-  overflow-x: hidden;
-  min-height: 600px;
-  min-width: 100%;
-}
-.login-carousel-row {
-  width: 50%;
-}
+<style lang="scss">
+/* 修复input 背景不协调 和光标变色 */
+/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 .login-carousel {
-  /* 上  右 下 左*/
-  margin: 30% 0% 0% 20%;
-  width: 100%;
+  width: 20%;
 }
-.login-form-row {
-  width: 50%;
+
+$bg: #283443;
+$light_gray: #fff;
+$cursor: #fff;
+
+@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
+  .login-container .el-input input {
+    color: $cursor;
+  }
 }
-.login-form {
-  /* 上  右 下 左*/
-  margin: 30% 0% 0% 35%;
-  width: 100%;
-}
-.el-row {
-  margin-bottom: 20px;
-}
-html,
-body,
-#app {
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
+
+/* reset element-ui css */
+.login-container {
+  .el-input {
+    display: inline-block;
+    height: 47px;
+    width: 85%;
+
+    input {
+      background: transparent;
+      border: 0px;
+      -webkit-appearance: none;
+      border-radius: 0px;
+      padding: 12px 5px 12px 15px;
+      color: $light_gray;
+      height: 47px;
+      caret-color: $cursor;
+
+      &:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px $bg inset !important;
+        -webkit-text-fill-color: $cursor !important;
+      }
+    }
+  }
+
+  .el-form-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    color: #454545;
+  }
 }
 </style>
 
+<style lang="scss" scoped>
+$dark_gray: #889aa4;
+$light_gray: #eee;
+
+.login-container {
+  min-height: 100%;
+  width: 100%;
+  background: url("/images/login-background.jpg") no-repeat center 0;
+  overflow: hidden;
+
+  .login-form {
+    position: relative;
+    width: 520px;
+    max-width: 100%;
+    padding: 160px 35px 0;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .svg-container {
+    padding: 6px 5px 6px 15px;
+    color: $dark_gray;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+  }
+
+  .title-container {
+    position: relative;
+
+    .title {
+      font-size: 26px;
+      color: $light_gray;
+      margin: 0px auto 40px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    font-size: 16px;
+    color: $dark_gray;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  @media only screen and (max-width: 470px) {
+  }
+}
+</style>

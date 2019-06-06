@@ -6,8 +6,12 @@ import '@/styles/index.scss'
 import locale from 'element-ui/lib/locale/lang/zh-CN'
 
 import App from './App.vue'
-import router from './router'
 import store from './store'
+import router from './router'
+// 权限
+import './permission'
+// 图标
+import './icon'
 
 Vue.use(ElementUI, { locale })
 
