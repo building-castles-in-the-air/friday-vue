@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import Layout from '@/layout'
+import HomePage from '@/page/home/index'
 
 /**
  * 所有人都可以访问的路由地址
@@ -19,7 +19,7 @@ export const constantRouters = [
     },
     {
         path: '/',
-        component: Layout,
+        component: HomePage,
         redirect: '/dashboard',
         children: [{
             path: 'dashboard',
@@ -34,6 +34,12 @@ export const constantRouters = [
         redirect: '/404',
     }
 ]
+/**
+ * 需要判断用户角色的路由地址
+ */
+export const asyncRoutes = [
+    
+]
 
 const createRouter = () => new Router({
     // mode: 'history', // require service support
@@ -42,5 +48,10 @@ const createRouter = () => new Router({
 })
 
 const router = createRouter()
+
+export function resetRouter() {
+    const newRouter = createRouter()
+    router.matcher = newRouter.matcher // reset router
+}
 
 export default router
