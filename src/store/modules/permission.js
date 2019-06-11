@@ -48,6 +48,8 @@ const mutations = {
 const actions = {
     generateRoutes({ commit }, roles) {
         return new Promise(resolve => {
+            // eslint-disable-next-line 
+            debugger
             let accessedRoutes
             if (roles.includes('admin')) {
                 accessedRoutes = asyncRoutes || []

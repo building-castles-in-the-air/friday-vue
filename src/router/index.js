@@ -38,7 +38,29 @@ export const constantRouters = [
  * 需要判断用户角色的路由地址
  */
 export const asyncRoutes = [
-    
+    {
+        path: '/permission',
+        component: HomePage,
+        redirect: '/permission/page',
+        alwaysShow: true, // will always show the root menu
+        name: 'Permission',
+        meta: {
+            title: 'Permission',
+            icon: 'lock',
+            roles: ['admin', 'editor', '1'] // you can set roles in root nav
+        },
+        children: [
+            {
+                path: 'page',
+                component: () => import('@/page/permission/page'),
+                name: 'PagePermission',
+                meta: {
+                    title: 'Page Permission',
+                    roles: ['admin', '1'] // or you can only set roles in sub nav
+                }
+            }
+        ]
+    }
 ]
 
 const createRouter = () => new Router({
