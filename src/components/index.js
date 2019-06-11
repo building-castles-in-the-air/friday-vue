@@ -12,5 +12,5 @@ export { default as appMain } from './appMain/appMain'
 export { default as rightPanel } from './rightPanel/rightPanel'
 // 设置
 export { default as settings } from './settings/settings'
-
-export { default as svgIcon } from './svgIcon/svgIcon'
+// 图标
+export { default as SvgIcon } from './svgIcon/svgIcon'
