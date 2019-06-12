@@ -75,7 +75,16 @@ const actions = {
                 reject(error)
             })
         })
-    }
+    },
+    // remove token
+    resetToken({ commit }) {
+        return new Promise(resolve => {
+            commit('SET_TOKEN', '')
+            commit('SET_ROLES', [])
+            removeToken()
+            resolve()
+        })
+    },
 }
 
 export default {

@@ -10,6 +10,17 @@ import HomePage from '@/page/home/index'
  */
 export const constantRouters = [
     {
+        path: '/redirect',
+        component: HomePage,
+        hidden: true,
+        children: [
+            {
+                path: '/redirect/:path*',
+                component: () => import('@/page/redirect/index')
+            }
+        ]
+    },
+    {
         path: '/login',
         component: () => import('@/page/login/login'),
         hidden: true
@@ -23,18 +34,15 @@ export const constantRouters = [
         path: '/',
         component: HomePage,
         redirect: '/dashboard',
-        children: [{
+        children: [
+          {
             path: 'dashboard',
-            name: 'Dashboard',
             component: () => import('@/page/dashboard/index'),
+            name: 'Dashboard',
             meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
-
-        }]
-    },
-    {
-        path: '*',
-        redirect: '/404',
-    }
+          }
+        ]
+      }
 ]
 /**
  * 需要判断用户角色的路由地址
@@ -62,7 +70,27 @@ export const asyncRoutes = [
                 }
             }
         ]
-    }
+    },
+    {
+        path: '/error',
+        component: HomePage,
+        redirect: 'noRedirect',
+        name: 'ErrorPages',
+        meta: {
+            title: 'Error Pages',
+            icon: '404'
+        },
+        hidden: true,
+        children: [
+            {
+                path: '404',
+                component: () => import('@/page/error/404'),
+                name: 'Page404',
+                meta: { title: '404', noCache: true }
+            }
+        ]
+    },
+    { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({

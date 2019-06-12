@@ -1,6 +1,6 @@
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
+// import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 
@@ -37,10 +37,8 @@ router.beforeEach(async (to, from, next) => {
                     // get user info
                     // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
                     const { roles } = await store.dispatch('user/getInfo')
-                    window.console.info(roles);
                     // generate accessible routes map based on 
                     const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-                    window.console.info(accessRoutes);
                     // dynamically add accessible routes
                     router.addRoutes(accessRoutes)
 
@@ -48,22 +46,20 @@ router.beforeEach(async (to, from, next) => {
                     // set the replace: true, so the navigation will not leave a history record
                     next({ ...to, replace: true })
                 } catch (error) {
-                    // remove token and go to login page to re-login
+                    // 删除token 并跳转登陆页面
                     await store.dispatch('user/resetToken')
-                    Message.error(error || 'Has Error')
                     next(`/login?redirect=${to.path}`)
                     NProgress.done()
                 }
             }
         }
     } else {
-        /* has no token*/
-
+        // 如果没有token
         if (whiteList.indexOf(to.path) !== -1) {
-            // in the free login whitelist, go directly
+            // 在白名单内，可以直接访问
             next()
         } else {
-            // other pages that do not have permission to access are redirected to the login page.
+            // 不在白名单内，重定向到登陆页面
             next(`/login?redirect=${to.path}`)
             NProgress.done()
         }
@@ -71,6 +67,6 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach(() => {
-    // finish progress bar
+    // 路由结束后，停止进度条
     NProgress.done()
 })

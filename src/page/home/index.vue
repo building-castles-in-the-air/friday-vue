@@ -2,8 +2,8 @@
   <div :class="classObj" class="app-wrapper">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar class="sidebar-container"/>
-    <div class="main-container">
-      <div>
+    <div :class="{hasTagsView:needTagsView}" class="main-container">
+      <div :class="{'fixed-header':fixedHeader}">
         <navbar/>
         <tags-view v-if="needTagsView"/>
       </div>
@@ -25,10 +25,16 @@ import {
 } from "@/components/";
 import { mapGetters } from "vuex";
 export default {
-  name: "Layout",
+  name: "Home",
   components: { sidebar, navbar, tagsView, appMain, rightPanel, settings },
   computed: {
-    ...mapGetters(["sidebar", "device"]),
+    ...mapGetters([
+      "sidebar",
+      "device",
+      "showSettings",
+      "needTagsView",
+      "fixedHeader"
+    ]),
     classObj() {
       return {
         hideSidebar: !this.sidebar.opened,
@@ -36,10 +42,12 @@ export default {
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === "mobile"
       };
+    },
+    methods: {
+      handleClickOutside() {
+        this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });
+      }
     }
-  },
-  data() {
-    return { needTagsView: true, showSettings: true };
   }
 };
 </script>
