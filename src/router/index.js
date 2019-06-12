@@ -11,11 +11,13 @@ import HomePage from '@/page/home/index'
 export const constantRouters = [
     {
         path: '/login',
-        component: () => import('@/page/login/login')
+        component: () => import('@/page/login/login'),
+        hidden: true
     },
     {
         path: '/404',
-        component: () => import('@/page/error/404')
+        component: () => import('@/page/error/404'),
+        hidden: true
     },
     {
         path: '/',
@@ -25,7 +27,7 @@ export const constantRouters = [
             path: 'dashboard',
             name: 'Dashboard',
             component: () => import('@/page/dashboard/index'),
-            meta: { title: 'Dashboard', icon: 'dashboard' }
+            meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
 
         }]
     },

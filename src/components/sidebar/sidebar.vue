@@ -26,14 +26,13 @@
 import { mapGetters } from "vuex";
 import Logo from "./Logo";
 import sidebarItem from "./sidebarItem";
+import variables from '@/styles/variables.scss'
+
 export default {
   name: "sidebar",
   components: { sidebarItem, Logo },
   computed: {
-    ...mapGetters([
-      "permission_routes"
-      // 'sidebar'
-    ]),
+    ...mapGetters(["permission_routes", "sidebar"]),
     activeMenu() {
       const route = this.$route;
       const { meta, path } = route;
@@ -44,13 +43,13 @@ export default {
       return path;
     },
     showLogo() {
-      return true;
+      return this.$store.state.settings.sidebarLogo;
     },
     isCollapse() {
-      return true;
+      return !this.sidebar.opened;
     },
     variables() {
-      return true;
+      return variables;
     }
   }
 };
