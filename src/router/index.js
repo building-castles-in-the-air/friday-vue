@@ -35,14 +35,14 @@ export const constantRouters = [
         component: HomePage,
         redirect: '/dashboard',
         children: [
-          {
-            path: 'dashboard',
-            component: () => import('@/page/dashboard/index'),
-            name: 'Dashboard',
-            meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
-          }
+            {
+                path: 'dashboard',
+                component: () => import('@/page/dashboard/index'),
+                name: 'Dashboard',
+                meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+            }
         ]
-      }
+    }
 ]
 /**
  * 需要判断用户角色的路由地址
@@ -57,7 +57,7 @@ export const asyncRoutes = [
         meta: {
             title: 'Permission',
             icon: 'lock',
-            roles: ['admin', 'editor', '1'] // you can set roles in root nav
+            roles: ['admin', 'editor', 'super'] // you can set roles in root nav
         },
         children: [
             {
@@ -66,7 +66,7 @@ export const asyncRoutes = [
                 name: 'PagePermission',
                 meta: {
                     title: 'Page Permission',
-                    roles: ['admin', '1'] // or you can only set roles in sub nav
+                    roles: ['admin', 'super'] // or you can only set roles in sub nav
                 }
             }
         ]
