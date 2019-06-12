@@ -1,5 +1,7 @@
-import { login, getInfo } from '@/api/user'
-import { setToken, getToken } from '@/util/auth'
+import { login, getInfo, logout } from '@/api/user'
+import { setToken, getToken, removeToken } from '@/util/auth'
+import { resetRouter } from '@/router'
+
 const state = {
     token: getToken(),
     avatar: '',
@@ -61,6 +63,19 @@ const actions = {
             })
         })
     },
+    logout({ commit, state }) {
+        return new Promise((resolve, reject) => {
+            logout(state.token).then(() => {
+                commit('SET_TOKEN', '')
+                commit('SET_ROLES', [])
+                removeToken()
+                resetRouter()
+                resolve()
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    }
 }
 
 export default {

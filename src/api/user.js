@@ -15,3 +15,10 @@ export function getInfo(token) {
         token
     })
 }
+
+export function logout() {
+    return request({
+        url: '/sys/auth/logout',
+        method: 'post'
+    })
+}
